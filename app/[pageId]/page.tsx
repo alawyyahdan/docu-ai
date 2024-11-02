@@ -1,4 +1,6 @@
-// pages/index.js
+// components/Editor.js
+"use client";
+
 import { useState, useEffect } from 'react';
 import { RoomProvider, useUpdateMyPresence, useOthers } from "@liveblocks/react";
 import { createClient } from "@liveblocks/client";
@@ -27,16 +29,13 @@ function Editor() {
     let aiWords = 0;
     let humanWords = 0;
 
-    // Track words based on their source
     const words = newContent.trim().split(/\s+/);
     words.forEach(word => {
-      // Check edit history to determine source
       const lastEdit = editHistory.find(edit => edit.word === word);
       if (lastEdit) {
         if (lastEdit.source === 'ai') aiWords++;
         else humanWords++;
       } else {
-        // New words are attributed to current source
         if (source === 'ai') aiWords++;
         else humanWords++;
       }
@@ -48,12 +47,10 @@ function Editor() {
     };
   };
 
-  // Handle text changes with source tracking
   const handleContentChange = (e, source = 'human') => {
     const newContent = e.target.value;
     setContent(newContent);
     
-    // Track edit in history
     const words = newContent.trim().split(/\s+/);
     const newHistory = words.map(word => ({
       word,
@@ -62,24 +59,18 @@ function Editor() {
     }));
     setEditHistory(newHistory);
 
-    // Calculate new percentages
     const percentages = calculateContentPercentages(newContent, source);
     setContentSource(percentages);
     
     updateMyPresence({ content: newContent, contentSource: percentages });
   };
 
-  // Simulate AI content generation
   const generateAIContent = async () => {
-    // This is a mock AI generation - replace with actual AI API call
     const aiGeneratedText = "This is simulated AI generated content for demonstration.";
     const newContent = content + (content ? " " : "") + aiGeneratedText;
-    
-    // Handle the AI-generated content
     handleContentChange({ target: { value: newContent } }, 'ai');
   };
 
-  // Content source indicator component
   const ContentSourceIndicator = ({ percentages }) => (
     <div className="flex items-center space-x-4 mb-4">
       <div className="flex-1 bg-gray-200 rounded-full h-4">
@@ -100,10 +91,8 @@ function Editor() {
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Collaborative Task Editor</h1>
       
-      {/* Content Source Indicator */}
       <ContentSourceIndicator percentages={contentSource} />
       
-      {/* Text Editor */}
       <div className="mb-6">
         <div className="flex gap-4 mb-4">
           <button
@@ -122,7 +111,6 @@ function Editor() {
           placeholder="Enter your task details..."
         />
 
-        {/* Word Source Indicators */}
         <div className="text-sm mb-4">
           {content.split(/\s+/).map((word, index) => {
             const source = editHistory.find(edit => edit.word === word)?.source || 'human';
@@ -169,7 +157,6 @@ function Editor() {
         </div>
       </div>
 
-      {/* Task List with Source Information */}
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">Tasks & Deadlines</h2>
         {tasks.map(task => (
@@ -201,7 +188,6 @@ function Editor() {
         ))}
       </div>
 
-      {/* Online Users */}
       <div className="mt-6">
         <p className="text-sm text-gray-600">
           {others.count} other user(s) online
@@ -211,6 +197,7 @@ function Editor() {
   );
 }
 
+// pages/index.js
 export default function Home() {
   return (
     <RoomProvider
